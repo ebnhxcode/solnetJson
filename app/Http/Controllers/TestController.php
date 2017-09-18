@@ -21,16 +21,18 @@ class TestController extends Controller
         'verify' => false
       ]);
 
-      $uri = 'fmi/rest/api/auth/Tasks_FMAngular';
+      $login_uri = 'fmi/rest/api/auth/Tasks_FMAngular';
 
       $login_data = [
-         'user' => 'nuevo',
-         'password' => '1234',
-         'layout' => 'prueba'
+         'json' => [
+            'user' => 'nuevo',
+            'password' => '1234',
+            'layout' => 'prueba'
+         ]
       ];
 
-      $response = $client->request('POST', $uri, ['json' => $login_data]);
-      
+      $response = $client->request('POST', $login_uri, $login_data);
+
       switch ($response->getStatusCode()) {
          case 200:
 
@@ -38,15 +40,16 @@ class TestController extends Controller
             #dd($responseContents->token);
 
             #Solicitar datos con el login
-            $uri_get = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+            $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+
             $headers = [
-            #'Authorization' => 'Bearer ' . $responseContents->token,
-            'Content-Type'        => 'application/json',
-            'FM-Data-token' => $responseContents->token,
+               'headers' => [
+                  'Content-Type' => 'application/json',
+                  'FM-Data-token' => $responseContents->token,
+               ]
             ];
-            $res = $client->request('GET', $uri_get, [
-            'headers' => $headers
-            ]);
+            $res = $client->request('GET', $get_uri, $headers);
+
             dd(json_decode($res->getBody()->getContents()));
 
             break;
