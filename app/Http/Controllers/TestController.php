@@ -11,26 +11,57 @@ use GuzzleHttp\Psr7\Request as GuzzleRequest;
 class TestController extends Controller
 {
 
-    public function __construct () {}
+   public function __construct () {}
 
-    public function test () {
+   public function test () {
 
-      $client = new Client(['base_uri' => 'https://201.238.235.30/', 'verify' => false ]);
+      #Conectar con el cliente
+      $client = new Client([
+        'base_uri' => 'https://201.238.235.30/',
+        'verify' => false
+      ]);
+
       $uri = 'fmi/rest/api/auth/Tasks_FMAngular';
-      $post_data = array(
-        'user' => 'nuevo',
-        'password' => '1234',
-        'layout' => 'prueba'
-      );
-      $data = json_encode($post_data);
-      #'content-type' => 'application/json'
-      $response = $client->request('POST', $uri, ['json'=>$post_data]);
 
+      $login_data = [
+         'user' => 'nuevo',
+         'password' => '1234',
+         'layout' => 'prueba'
+      ];
 
-      dd($response->getBody()->getContents());
+      $response = $client->request('POST', $uri, ['json' => $login_data]);
+      
+      switch ($response->getStatusCode()) {
+         case 200:
 
+            $responseContents = json_decode($response->getBody()->getContents());
+            #dd($responseContents->token);
 
-    }
+            #Solicitar datos con el login
+            $uri_get = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+            $headers = [
+            #'Authorization' => 'Bearer ' . $responseContents->token,
+            'Content-Type'        => 'application/json',
+            'FM-Data-token' => $responseContents->token,
+            ];
+            $res = $client->request('GET', $uri_get, [
+            'headers' => $headers
+            ]);
+            dd(json_decode($res->getBody()->getContents()));
+
+            break;
+
+         case 401:
+         case 402:
+         case 403:
+         case 404:
+         case 405:
+         case 422:
+            dd('Error: '.$response->getStatusCode());
+            break;
+      }
+
+   }
 
     /**
      * Display a listing of the resource.
