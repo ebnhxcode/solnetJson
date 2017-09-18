@@ -1,17 +1,17 @@
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews
-	Options	-Indexes
+	#Options	-Indexes
     </IfModule>
 
-    RewriteEngine On
+    #RewriteEngine On
 
     # Redirect Trailing Slashes If Not A Folder...
 
-    RewriteRule ^(.*)/$ /$1 [L,R=301]
-    RewriteBase /
-    RewriteCond %{HTTP_HOST} !^www\. [NC]
-    RewriteCond %{HTTP_HOST} ^local.solnetjson [NC]
+    #RewriteRule ^(.*)/$ /$1 [L,R=301]
+    #RewriteBase /
+    #RewriteCond %{HTTP_HOST} !^www\. [NC]
+    #RewriteCond %{HTTP_HOST} ^local.solnetjson [NC]
 
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
