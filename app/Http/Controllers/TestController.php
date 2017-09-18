@@ -4,13 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
+
 class TestController extends Controller
 {
 
     public function __construct () {}
 
     public function test () {
-        
+
+      $client = new Client(['base_uri' => 'https://201.238.235.30/', 'verify' => false ]);
+      $uri = 'fmi/rest/api/auth/Tasks_FMAngular';
+      $post_data = array(
+        'user' => 'nuevo',
+        'password' => '1234',
+        'layout' => 'prueba'
+      );
+      $data = json_encode($post_data);
+      #'content-type' => 'application/json'
+      $response = $client->request('POST', $uri, ['json'=>$post_data]);
+
+
+      dd($response->getBody()->getContents());
+
+
     }
 
     /**
