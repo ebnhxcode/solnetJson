@@ -33,7 +33,7 @@ return [
    'service_data' => [
       'solution'     => 'Tasks_FMAngular', #SOLUTION FOR CREATE/DELETE/UPDATE BY [POST,PUT,PATCH,DELETE]
       'layout'       => 'prueba', #LAYOUT FOR CREATE/DELETE/UPDATE BY [POST,PUT,PATCH,DELETE]
-      'verify'       => false,
+      'verify'       => false, #OPTION TO VERIFY OR NOT SSL CERT
    ],
 
    #Uris
