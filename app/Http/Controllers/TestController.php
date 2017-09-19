@@ -15,6 +15,7 @@ class TestController extends Controller
 
    public function test () {
 
+      #dd(config('collection'));
       #Conectar con el cliente
       $client = new Client([
         'base_uri' => 'https://201.238.235.30/',
