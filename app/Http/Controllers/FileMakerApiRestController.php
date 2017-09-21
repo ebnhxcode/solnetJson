@@ -75,12 +75,12 @@ class FileMakerApiRestController extends Controller
       }
    }
 
-   public function test($type)
+   public function test($type, Request $request)
    {
       try {
          switch ($type) {
             case 'connection':
-               $this->test_connection();
+               return $this->test_connection($request);
                break;
          }
       } catch (\Exception $ex) {
@@ -148,50 +148,56 @@ class FileMakerApiRestController extends Controller
       }
    }
 
-   public function test_connection()
+   public function test_connection(Request $request)
    {
       try {
-         #Conectar con el cliente
-         $client = new Client([
-            'base_uri' => $this->uri->base_uri,
-            'verify' => $this->service_data->verify,
-         ]);
 
-         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+         if ($request->wantsJson() || true) {
+            #Conectar con el cliente
+            $client = new Client([
+               'base_uri' => $this->uri->base_uri,
+               'verify' => $this->service_data->verify,
+            ]);
 
-         $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
+            $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
 
-         switch ($response->getStatusCode()) {
-            case 200:
+            #(array)$this->json_auth_data
+            $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
 
-               $responseContents = json_decode($response->getBody()->getContents());
-               #dd($responseContents->token);
+            switch ($response->getStatusCode()) {
+               case 200:
 
-               #Solicitar datos con el login
-               $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+                  $responseContents = json_decode($response->getBody()->getContents());
+                  #dd($responseContents->token);
 
-               $headers = [
-                  'headers' => [
-                     'Content-Type' => 'application/json',
-                     'FM-Data-token' => $responseContents->token,
-                  ]
-               ];
-               $res = $client->request('GET', $get_uri, $headers);
+                  #Solicitar datos con el login
+                  $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
 
-               #dd(json_decode($res->getBody()->getContents()));
-               return response()->json(json_decode($res->getBody()->getContents()));
+                  $headers = [
+                     'headers' => [
+                        'Content-Type' => 'application/json',
+                        'FM-Data-token' => $responseContents->token,
+                     ]
+                  ];
+                  $res = $client->request('GET', $get_uri, $headers);
 
-               break;
+                  $contents = json_decode($res->getBody()->getContents());
 
-            case 401:
-            case 402:
-            case 403:
-            case 404:
-            case 405:
-            case 422:
-               dd('Error: '.$response->getStatusCode());
-               break;
+                  return response()->json($contents->data);
+
+                  break;
+
+               case 401:
+               case 402:
+               case 403:
+               case 404:
+               case 405:
+               case 422:
+                  dd('Error: '.$response->getStatusCode());
+                  break;
+            }
          }
+
       } catch (\Exception $ex) {
          return $ex->getMessage();
       }
