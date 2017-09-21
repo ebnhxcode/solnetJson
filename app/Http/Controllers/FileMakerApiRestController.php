@@ -77,75 +77,101 @@ class FileMakerApiRestController extends Controller
 
    public function test($type, Request $request)
    {
-      try {
+      #try {
          switch ($type) {
             case 'connection':
                return $this->test_connection($request);
                break;
+            case 'edit':
+               return $this->test_edit($request);
+               break;
          }
-      } catch (\Exception $ex) {
-         return $ex->getMessage();
-      }
+      #} catch (\Exception $ex) {
+      #   return $ex->getMessage();
+      #}
    }
    
-   public function test_edit()
+   public function test_edit(Request $request)
    {
-      try {
-         #$response = $this->connect_api();
-         #Conectar con el cliente
-         $client = new Client([
-            'base_uri' => $this->uri->base_uri,
-            'verify' => $this->service_data->verify,
-         ]);
+      #try {
+         if ($request->wantsJson() || true) {
+            #$response = $this->connect_api();
+            #Conectar con el cliente
+            $client = new Client([
+               'base_uri' => $this->uri->base_uri,
+               'verify' => $this->service_data->verify,
+            ]);
 
-         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
-         $response = $client->request('POST', $login_uri, $this->json_auth_data);
+            $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+            $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
 
-         switch ($response->getStatusCode()) {
-            case 200:
+            switch ($response->getStatusCode()) {
+               case 200:
 
-               $responseContents = json_decode($response->getBody()->getContents());
-               #dd($responseContents->token);
+                  $responseContents = json_decode($response->getBody()->getContents());
+                  #dd($responseContents->token);
 
-               #Enviar datos de modificacion
-               $edit_uri = 'fmi/rest/api/record/Tasks_FMAngular/usuarios/1';
+                  #Enviar datos de modificacion
+                  $edit_uri = $this->uri->base_uri.'fmi/rest/api/record/Tasks_FMAngular/usuarios/1';
 
-               $headers = [
-                  'headers' => [
-                     'Content-Type' => 'application/json',
-                     'FM-Data-token' => $responseContents->token,
-                  ]
-               ];
 
-               $data = [
-                  'data' => [
-                     'Us_Nombre' => 'Vitoco',
-                     'Us_Apellido_P' => 'Garrafa',
-                     'Us_Apellido_M' => 'Sep.',
-                  ],
-                  'modId' => '1'
-               ];
+                  $body = [
+                     'body' => [
+                        'Us_Nombre' => 'Vitoco',
+                        'Us_Apellido_P' => 'Garrafa',
+                        'Us_Apellido_M' => 'Sep.'
+                     ],
+                     'modId' => '2'
+                  ];
 
-               $response = $client->request('PUT', $edit_uri, $data);
-               #$res = $client->request('GET', $edit_uri, $headers);
+                  $headers = [
+                     'headers' => [
+                        'Content-Type' => 'application/json',
+                        'FM-Data-token' => $responseContents->token,
+                     ],
+                     'body' => [
+                        'Us_Nombre' => 'Vitoco',
+                        'Us_Apellido_P' => 'Garrafa',
+                        'Us_Apellido_M' => 'Sep.'
+                     ],
+                  ];
 
-               #dd(json_decode($res->getBody()->getContents()));
-               return response()->json(json_decode($response->getBody()->getContents()));
+                  $options =[
+                     'headers' => [
+                        'Content-Type' => 'application/json',
+                        'FM-Data-token' => $responseContents->token,
+                     ],
 
-               break;
+                     'form_params' => [
+                        'Us_Nombre' => 'Vitoco',
+                        'Us_Apellido_P' => 'Garrafa',
+                        'Us_Apellido_M' => 'Sep.'
+                     ],
+                  ];
 
-            case 401:
-            case 402:
-            case 403:
-            case 404:
-            case 405:
-            case 422:
-               dd('Error: '.$response->getStatusCode());
-               break;
+                  #$data = json_decode(json_encode($data));
+                  #$response = $client->request('PUT', $edit_uri, ['json'=>$data,'headers'=>$headers]);
+                  $response = $client->request('PUT', $edit_uri, (array)$options);
+
+                  dd(json_decode($response->getBody()->getContents()));
+
+                  return response()->json(json_decode($response->getBody()->getContents()));
+
+                  break;
+
+               case 401:
+               case 402:
+               case 403:
+               case 404:
+               case 405:
+               case 422:
+                  dd('Error: '.$response->getStatusCode());
+                  break;
+            }
          }
-      } catch (\Exception $ex) {
-         return $ex->getMessage();
-      }
+      #} catch (\Exception $ex) {
+      #   return $ex->getMessage();
+      #}
    }
 
    public function test_connection(Request $request)
