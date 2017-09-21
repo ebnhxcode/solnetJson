@@ -34,7 +34,11 @@ class FileMakerApiRestController extends Controller
 
    public function logout()
    {
+      try {
 
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
    }
 
    public function test($type)
@@ -53,7 +57,6 @@ class FileMakerApiRestController extends Controller
    public function test_connection()
    {
       try {
-         ;
          #Conectar con el cliente
          $client = new Client([
             'base_uri' => 'https://201.238.235.30/',
@@ -89,8 +92,8 @@ class FileMakerApiRestController extends Controller
                ];
                $res = $client->request('GET', $get_uri, $headers);
 
-               dd(json_decode($res->getBody()->getContents()));
-               #return response()->json(json_decode($res->getBody()->getContents()));
+               #dd(json_decode($res->getBody()->getContents()));
+               return response()->json(json_decode($res->getBody()->getContents()));
 
                break;
 
