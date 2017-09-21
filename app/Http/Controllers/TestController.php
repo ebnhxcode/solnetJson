@@ -15,7 +15,7 @@ class TestController extends Controller
 
    public function test () {
 
-      response()->json(['stc'=>'0']);
+      return response()->json(['rc' => '0']);
 
       #dd(config('collection'));
       #Conectar con el cliente
