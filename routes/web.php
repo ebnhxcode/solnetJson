@@ -11,18 +11,20 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+#Route::get('/', function () { return view('welcome'); });
 
 #Route to test connection with FM Api rest
-Route::get('test', 'TestController@test');
+#Route::get('test', 'TestController@test');
+
+
+#For the moment all is public : mode development.
+Route::get('/test/{type}', 'FileMakerApiRestController@test');
+Route::get('/auth/login', 'FileMakerApiRestController@login');
+Route::get('/auth/logout', 'FileMakerApiRestController@logout');
 
 
 
 
 
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+#Auth::routes();
+#Route::get('/home', 'HomeController@index')->name('home');
