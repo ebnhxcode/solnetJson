@@ -13,58 +13,61 @@ class TestController extends Controller
 
    public function __construct () {}
 
-   public function test () {
+   public function test (Request $request) {
 
-      return response()->json(['rc' => '0']);
+      if ($request->wantsJson()) {
 
-      #dd(config('collection'));
-      #Conectar con el cliente
-      $client = new Client([
-        'base_uri' => 'https://201.238.235.30/',
-        'verify' => false
-      ]);
+         #dd(config('collection'));
+         #Conectar con el cliente
+         $client = new Client([
+            'base_uri' => 'https://201.238.235.30/',
+            'verify' => false
+         ]);
 
-      $login_uri = 'fmi/rest/api/auth/Tasks_FMAngular';
+         $login_uri = 'fmi/rest/api/auth/Tasks_FMAngular';
 
-      $login_data = [
-         'json' => [
-            'user' => 'nuevo',
-            'password' => '1234',
-            'layout' => 'prueba'
-         ]
-      ];
+         $login_data = [
+            'json' => [
+               'user' => 'nuevo',
+               'password' => '1234',
+               'layout' => 'prueba'
+            ]
+         ];
 
-      $response = $client->request('POST', $login_uri, $login_data);
+         $response = $client->request('POST', $login_uri, $login_data);
 
-      switch ($response->getStatusCode()) {
-         case 200:
+         switch ($response->getStatusCode()) {
+            case 200:
 
-            $responseContents = json_decode($response->getBody()->getContents());
-            #dd($responseContents->token);
+               $responseContents = json_decode($response->getBody()->getContents());
+               #dd($responseContents->token);
 
-            #Solicitar datos con el login
-            $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+               #Solicitar datos con el login
+               $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
 
-            $headers = [
-               'headers' => [
-                  'Content-Type' => 'application/json',
-                  'FM-Data-token' => $responseContents->token,
-               ]
-            ];
-            $res = $client->request('GET', $get_uri, $headers);
+               $headers = [
+                  'headers' => [
+                     'Content-Type' => 'application/json',
+                     'FM-Data-token' => $responseContents->token,
+                  ]
+               ];
+               $res = $client->request('GET', $get_uri, $headers);
 
-            dd(json_decode($res->getBody()->getContents()));
+               #dd(json_decode($res->getBody()->getContents()));
+               return response()->json(json_decode($res->getBody()->getContents()));
 
-            break;
+               break;
 
-         case 401:
-         case 402:
-         case 403:
-         case 404:
-         case 405:
-         case 422:
-            dd('Error: '.$response->getStatusCode());
-            break;
+            case 401:
+            case 402:
+            case 403:
+            case 404:
+            case 405:
+            case 422:
+               dd('Error: '.$response->getStatusCode());
+               break;
+         }
+
       }
 
    }
