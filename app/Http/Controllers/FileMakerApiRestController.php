@@ -9,19 +9,49 @@ use GuzzleHttp\Client;
 
 class FileMakerApiRestController extends Controller
 {
-
+   private  $collection;
+   private  $auth_data,
+            $json_auth_data,
+            $json_auth_usuarios_data,
+            $service_data,
+            $uri;
 
    public function __construct()
    {
+      try {
+         $this->collection = json_decode(json_encode(config('collection')));
+         $this->auth_data = $this->collection->auth_data;
+         $this->json_auth_data = $this->collection->json_auth_data;
+         $this->json_auth_usuarios_data = $this->collection->json_auth_usuarios_data;
+         $this->service_data = $this->collection->service_data;
+         $this->uri = $this->collection->uri;
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
+   }
+
+   public function connect_api()
+   {
+      try {
+         #Conectar con el cliente
+         $client = new Client([
+            'base_uri' => $this->uri->base_uri,
+            'verify' => $this->service_data->verify,
+         ]);
+
+         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+         $response = $client->request('POST', $login_uri, $this->json_auth_data);
+         return $response;
+
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
    }
 
    public function login(Request $request)
    {
       try {
          if ($request->wantsJson()) {
-
-
-
 
 
          }else{
@@ -31,11 +61,15 @@ class FileMakerApiRestController extends Controller
          return $ex->getMessage();
       }
    }
-
-   public function logout()
+   public function logout(Request $request)
    {
       try {
+         if ($request->wantsJson()) {
 
+
+         }else{
+            return abort(404);
+         }
       } catch (\Exception $ex) {
          return $ex->getMessage();
       }
@@ -53,27 +87,78 @@ class FileMakerApiRestController extends Controller
          return $ex->getMessage();
       }
    }
+   
+   public function test_edit()
+   {
+      try {
+         #$response = $this->connect_api();
+         #Conectar con el cliente
+         $client = new Client([
+            'base_uri' => $this->uri->base_uri,
+            'verify' => $this->service_data->verify,
+         ]);
+
+         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+         $response = $client->request('POST', $login_uri, $this->json_auth_data);
+
+         switch ($response->getStatusCode()) {
+            case 200:
+
+               $responseContents = json_decode($response->getBody()->getContents());
+               #dd($responseContents->token);
+
+               #Enviar datos de modificacion
+               $edit_uri = 'fmi/rest/api/record/Tasks_FMAngular/usuarios/1';
+
+               $headers = [
+                  'headers' => [
+                     'Content-Type' => 'application/json',
+                     'FM-Data-token' => $responseContents->token,
+                  ]
+               ];
+
+               $data = [
+                  'data' => [
+                     'Us_Nombre' => 'Vitoco',
+                     'Us_Apellido_P' => 'Garrafa',
+                     'Us_Apellido_M' => 'Sep.',
+                  ],
+                  'modId' => '1'
+               ];
+
+               $response = $client->request('PUT', $edit_uri, $data);
+               #$res = $client->request('GET', $edit_uri, $headers);
+
+               #dd(json_decode($res->getBody()->getContents()));
+               return response()->json(json_decode($response->getBody()->getContents()));
+
+               break;
+
+            case 401:
+            case 402:
+            case 403:
+            case 404:
+            case 405:
+            case 422:
+               dd('Error: '.$response->getStatusCode());
+               break;
+         }
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
+   }
 
    public function test_connection()
    {
       try {
          #Conectar con el cliente
          $client = new Client([
-            'base_uri' => 'https://201.238.235.30/',
-            'verify' => false
+            'base_uri' => $this->uri->base_uri,
+            'verify' => $this->service_data->verify,
          ]);
 
-         $login_uri = 'fmi/rest/api/auth/Tasks_FMAngular';
-
-         $login_data = [
-            'json' => [
-               'user' => 'nuevo',
-               'password' => '1234',
-               'layout' => 'prueba'
-            ]
-         ];
-
-         $response = $client->request('POST', $login_uri, $login_data);
+         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+         $response = $client->request('POST', $login_uri, $this->json_auth_data);
 
          switch ($response->getStatusCode()) {
             case 200:

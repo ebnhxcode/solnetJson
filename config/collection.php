@@ -14,14 +14,14 @@
 
 return [
    #Post data auth
-   'auth' => [
+   'auth_data' => [
       'user'         => 'nuevo',
       'password'     => '1234',
       'layout'       => 'prueba'
    ],
 
    #Json post data auth
-   'json_auth' => [
+   'json_auth_data' => [
       'json' => [
          'user'      => 'nuevo',
          'password'  => '1234',
@@ -29,10 +29,22 @@ return [
       ]
    ],
 
+   #Json post data auth
+   'json_auth_usuarios_data' => [
+      'json' => [
+         'user'      => 'nuevo',
+         'password'  => '1234',
+         'layout'    => 'usuarios'
+      ]
+   ],
+
    #Service project Solution and Layout
    'service_data' => [
       'solution'     => 'Tasks_FMAngular', #SOLUTION FOR CREATE/DELETE/UPDATE BY [POST,PUT,PATCH,DELETE]
-      'layout'       => 'prueba', #LAYOUT FOR CREATE/DELETE/UPDATE BY [POST,PUT,PATCH,DELETE]
+      'layout'       => [
+            'prueba'    => 'prueba',
+            'usuarios'  => 'usuarios',
+         ], #LAYOUT FOR CREATE/DELETE/UPDATE BY [POST,PUT,PATCH,DELETE]
       'verify'       => false, #OPTION TO VERIFY OR NOT SSL CERT
    ],
 
