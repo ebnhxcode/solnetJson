@@ -15,8 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+#Route to test connection with FM Api rest
 Route::get('test', 'TestController@test');
+
+
+
+
+
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
