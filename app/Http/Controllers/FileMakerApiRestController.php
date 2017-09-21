@@ -158,7 +158,8 @@ class FileMakerApiRestController extends Controller
          ]);
 
          $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
-         $response = $client->request('POST', $login_uri, $this->json_auth_data);
+
+         $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
 
          switch ($response->getStatusCode()) {
             case 200:

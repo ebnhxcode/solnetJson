@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9abd6189-c18f-4b77-acec-021463b7d6b5" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/FileMakerApiRestController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/FileMakerApiRestController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/collection.php" afterPath="$PROJECT_DIR$/config/collection.php" />
     </list>
     <ignored path="solnetjson.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,16 +47,15 @@
       <file leaf-file-name="FileMakerApiRestController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FileMakerApiRestController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6197655">
-              <caret line="125" column="32" selection-start-line="125" selection-start-column="32" selection-end-line="125" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.7487437">
+              <caret line="180" column="16" selection-start-line="180" selection-start-column="16" selection-end-line="180" selection-end-column="16" />
               <folding>
                 <element signature="e#40#68#0#PHP" expanded="true" />
                 <element signature="e#934#1453#0#PHP" expanded="false" />
                 <element signature="e#1458#1693#0#PHP" expanded="false" />
                 <element signature="e#1697#1933#0#PHP" expanded="false" />
                 <element signature="e#1938#2194#0#PHP" expanded="false" />
-                <element signature="e#4105#5609#0#PHP" expanded="false" />
-                <element signature="e#5615#5908#0#PHP" expanded="false" />
+                <element signature="e#5623#5916#0#PHP" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -470,16 +468,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/FileMakerApiRestController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6197655">
-          <caret line="125" column="32" selection-start-line="125" selection-start-column="32" selection-end-line="125" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.7487437">
+          <caret line="180" column="16" selection-start-line="180" selection-start-column="16" selection-end-line="180" selection-end-column="16" />
           <folding>
             <element signature="e#40#68#0#PHP" expanded="true" />
             <element signature="e#934#1453#0#PHP" expanded="false" />
             <element signature="e#1458#1693#0#PHP" expanded="false" />
             <element signature="e#1697#1933#0#PHP" expanded="false" />
             <element signature="e#1938#2194#0#PHP" expanded="false" />
-            <element signature="e#4105#5609#0#PHP" expanded="false" />
-            <element signature="e#5615#5908#0#PHP" expanded="false" />
+            <element signature="e#5623#5916#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
