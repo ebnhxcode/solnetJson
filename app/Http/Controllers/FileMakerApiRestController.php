@@ -194,7 +194,7 @@ class FileMakerApiRestController extends Controller
                   #dd($responseContents->token);
 
                   #Solicitar datos con el login
-                  $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/prueba';
+                  $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/usuarios';
 
                   $headers = [
                      'headers' => [
@@ -209,7 +209,7 @@ class FileMakerApiRestController extends Controller
                   return response()->json($contents->data);
 
                   break;
-
+                  
                case 401:
                case 402:
                case 403:
