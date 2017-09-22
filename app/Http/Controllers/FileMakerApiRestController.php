@@ -102,7 +102,8 @@ class FileMakerApiRestController extends Controller
                'verify' => $this->service_data->verify,
             ]);
 
-            $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+            $login_uri = $this->uri->base_uri.str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+
             $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
 
             switch ($response->getStatusCode()) {
@@ -114,9 +115,8 @@ class FileMakerApiRestController extends Controller
                   #Enviar datos de modificacion
                   $edit_uri = $this->uri->base_uri.'fmi/rest/api/record/Tasks_FMAngular/usuarios/1';
 
-
                   $body = [
-                     'body' => [
+                     'form_params' => [
                         'Us_Nombre' => 'Vitoco',
                         'Us_Apellido_P' => 'Garrafa',
                         'Us_Apellido_M' => 'Sep.'
@@ -129,11 +129,6 @@ class FileMakerApiRestController extends Controller
                         'Content-Type' => 'application/json',
                         'FM-Data-token' => $responseContents->token,
                      ],
-                     'body' => [
-                        'Us_Nombre' => 'Vitoco',
-                        'Us_Apellido_P' => 'Garrafa',
-                        'Us_Apellido_M' => 'Sep.'
-                     ],
                   ];
 
                   $options =[
@@ -142,16 +137,18 @@ class FileMakerApiRestController extends Controller
                         'FM-Data-token' => $responseContents->token,
                      ],
 
-                     'form_params' => [
+                     'body' => [
                         'Us_Nombre' => 'Vitoco',
                         'Us_Apellido_P' => 'Garrafa',
                         'Us_Apellido_M' => 'Sep.'
                      ],
                   ];
+                  #dd($options);
 
                   #$data = json_decode(json_encode($data));
                   #$response = $client->request('PUT', $edit_uri, ['json'=>$data,'headers'=>$headers]);
-                  $response = $client->request('PUT', $edit_uri, (array)$options);
+                  $response = $client->request('PUT', $edit_uri, [['body' => (array)$body], ['headers' => $headers]]);
+                  dd($response);
 
                   dd(json_decode($response->getBody()->getContents()));
 
