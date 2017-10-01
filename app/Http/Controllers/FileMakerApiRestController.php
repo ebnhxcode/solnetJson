@@ -72,7 +72,7 @@ class FileMakerApiRestController extends Controller
 
       $contents = json_decode($res->getBody()->getContents());
    
-      return $contents->data;
+      return response()->json($contents->data);
       
    }
 
