@@ -21,6 +21,7 @@
 Route::get('/test/{type}', 'FileMakerApiRestController@test');
 Route::get('/auth/login', 'FileMakerApiRestController@login');
 Route::get('/auth/logout', 'FileMakerApiRestController@logout');
+Route::get('rest/api/get/{layout}', 'FileMakerApiRestController@getDataRequestByLayout');
 
 
 
