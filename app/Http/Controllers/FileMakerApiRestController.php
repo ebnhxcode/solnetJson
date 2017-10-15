@@ -79,44 +79,55 @@ class FileMakerApiRestController extends Controller
       
    }
 
-   public function postDataRequestByLayout (Request $request, $layout) {
+   public function postDataRequestByLayout (Request $request) {
+      $this->validate($request, [
+         'user' => 'required',
+         'pass' => 'required',
+         'layout' => 'required',
+      ]);
+
+
+      #return response()->json($request->all());
+      #return response()->json(['rc'=>'1']);
 
       if ($request->wantsJson()) {
-         dd(response()->json(['rc'=>'1']));
+         #dd(response()->json(['rc'=>'1']));
+         #Conecta con el Api de FM y recibe el response de la conexion
+         $response = $this->connect_api($request->layout);
+
+         ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
+
+         #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
+         $responseContents = json_decode($response->getBody()->getContents());
+
+         return response()->json($responseContents);
+         #Solicitar datos con el login (concatena el layout a consultar)
+         $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$layout;
+
+         #Configura headers para hacer la peticion + token
+         $options = [
+            'headers' => [
+               'FM-Data-token' => $responseContents->token,
+               'Content-Type' => 'application/json'
+            ],
+            'body' => [
+               'query' => ['Us_Usuario' => 'Victor', 'Us_pass' => '123']
+            ]
+         ];
+
+         #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
+         $res = $this->client->request('POST', $post_uri, $options);
+
+         #Recibe el contenido y dispone en json para la aplicacion
+         $contents = json_decode($res->getBody()->getContents());
+
+         return dd($contents);
+
+         return response()->json($contents->data);
+
+
+
       }
-
-      #dd(response()->json(['rc'=>'1']));
-      #Conecta con el Api de FM y recibe el response de la conexion
-      $response = $this->connect_api($layout);
-
-      ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
-
-      #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
-      $responseContents = json_decode($response->getBody()->getContents());
-
-      #Solicitar datos con el login (concatena el layout a consultar)
-      $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$layout;
-
-      #Configura headers para hacer la peticion + token
-      $options = [
-         'headers' => [
-            'FM-Data-token' => $responseContents->token,
-            'Content-Type' => 'application/json'
-         ], 
-         'body' => [
-            'query' => ['Us_Usuario' => 'Victor', 'Us_pass' => '123']
-         ]
-      ];
-
-      #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
-      $res = $this->client->request('POST', $post_uri, $options);
-
-      #Recibe el contenido y dispone en json para la aplicacion
-      $contents = json_decode($res->getBody()->getContents());
-
-      return dd($contents);
-
-      return response()->json($contents->data);
       
    }
 
