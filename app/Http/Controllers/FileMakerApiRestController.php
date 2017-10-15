@@ -86,7 +86,6 @@ class FileMakerApiRestController extends Controller
          'layout' => 'required',
       ]);
 
-
       #return response()->json($request->all());
       #return response()->json(['rc'=>'1']);
 
@@ -100,23 +99,31 @@ class FileMakerApiRestController extends Controller
          #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
          $responseContents = json_decode($response->getBody()->getContents());
 
-         return response()->json($responseContents);
+         #return response()->json($responseContents);
          #Solicitar datos con el login (concatena el layout a consultar)
-         $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$layout;
+         $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$request->layout;
 
          #Configura headers para hacer la peticion + token
-         $options = [
+
+         $body = [
+            'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
+         ];
+
+         $headers = [
             'headers' => [
-               'FM-Data-token' => $responseContents->token,
-               'Content-Type' => 'application/json'
+               'Content-Type' => 'application/json',
+               'FM-Data-token' => $responseContents->token
             ],
-            'body' => [
-               'query' => ['Us_Usuario' => 'Victor', 'Us_pass' => '123']
-            ]
+            'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
+         ];
+
+         $options = [
+            $body,
+            $headers,
          ];
 
          #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
-         $res = $this->client->request('POST', $post_uri, $options);
+         $res = $this->client->request('POST', $post_uri, $headers);
 
          #Recibe el contenido y dispone en json para la aplicacion
          $contents = json_decode($res->getBody()->getContents());
