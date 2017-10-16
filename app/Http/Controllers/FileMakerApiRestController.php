@@ -332,8 +332,7 @@ class FileMakerApiRestController extends Controller
    public function test_show (Request $request) {
       #dd(response()->json(['rc'=>'1']));
       #Conecta con el Api de FM y recibe el response de la conexion
-      $response = $this->connect_api($request->layout);
-
+      $response = $this->connect_api('usuarios');
       ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
 
       #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
@@ -341,7 +340,7 @@ class FileMakerApiRestController extends Controller
 
       #return response()->json($responseContents);
       #Solicitar datos con el login (concatena el layout a consultar)
-      $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$request->layout;
+      $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/usuarios';
 
       #Configura headers para hacer la peticion + token
 
