@@ -19,37 +19,31 @@ class FileMakerApiRestController extends Controller
 
    public function __construct()
    {
-      try {
-         #Istancia de los objetos a disponer dentro de la API
-         $this->collection = json_decode(json_encode(config('collection')));#Instancia de archivo php con configuracion
-         $this->auth_data = $this->collection->auth_data; #Datos de autenticacion con el api
-         $this->json_auth_data = $this->collection->json_auth_data;
-         $this->json_auth_usuarios_data = $this->collection->json_auth_usuarios_data;
-         $this->service_data = $this->collection->service_data;
-         $this->uri = $this->collection->uri;
+      #Istancia de los objetos a disponer dentro de la API
+      $this->collection = json_decode(json_encode(config('collection')));#Instancia de archivo php con configuracion
+      $this->auth_data = $this->collection->auth_data; #Datos de autenticacion con el api
+      $this->json_auth_data = $this->collection->json_auth_data;
+      $this->json_auth_usuarios_data = $this->collection->json_auth_usuarios_data;
+      $this->service_data = $this->collection->service_data;
+      $this->uri = $this->collection->uri;
 
-         #Conectar con el cliente
-         $this->client = new Client([
-            'base_uri' => $this->uri->base_uri,
-            'verify' => $this->service_data->verify,
-         ]);
-      } catch (\Exception $ex) {
-         return $ex->getMessage();
-      }
+      #Conectar con el cliente
+      $this->client = new Client([
+         'base_uri' => $this->uri->base_uri,
+         'verify' => $this->service_data->verify,
+      ]);
    }
 
    /* Return response and FM-Data-token */
    public function connect_api($layout)
    {
-      #try {
-         #Hace un replace de la keywork :solution por la solucion definida en la coleccion
-         $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
-         #Asigna el layout al objeto para hacer la peticion a ese layout
-         $this->json_auth_data->json->layout = $layout;
-         #Guarda el response de la peticion y la retorna a la funcion que llamo la conexion
-         $response = $this->client->request('POST', $login_uri, (array)$this->json_auth_data);
-         return $response;
-      #} catch (\Exception $ex) {return $ex->getMessage();}
+      #Hace un replace de la keywork :solution por la solucion definida en la coleccion
+      $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+      #Asigna el layout al objeto para hacer la peticion a ese layout
+      $this->json_auth_data->json->layout = $layout;
+      #Guarda el response de la peticion y la retorna a la funcion que llamo la conexion
+      $response = $this->client->request('POST', $login_uri, (array)$this->json_auth_data);
+      return $response;
    }
 
    public function getDataRequestByLayout ($layout) {
@@ -105,25 +99,25 @@ class FileMakerApiRestController extends Controller
 
          #Configura headers para hacer la peticion + token
 
-         $body = [
+         $query = json_decode(json_encode([
             'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
-         ];
+         ]));
 
          $headers = [
             'headers' => [
                'Content-Type' => 'application/json',
                'FM-Data-token' => $responseContents->token
             ],
-            'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
          ];
 
-         $options = [
-            $body,
+         $options = json_decode(json_encode([
+            $query,
             $headers,
-         ];
+         ]));
 
+         #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
          #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
-         $res = $this->client->request('POST', $post_uri, $headers);
+         $res = $this->client->post($post_uri, $headers, (array)[ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ] );
 
          #Recibe el contenido y dispone en json para la aplicacion
          $contents = json_decode($res->getBody()->getContents());
