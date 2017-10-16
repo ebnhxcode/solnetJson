@@ -117,7 +117,7 @@ class FileMakerApiRestController extends Controller
 
          #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
          #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
-         $res = $this->client->post($post_uri, $headers, (array)[ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ] );
+         $res = $this->client->post($post_uri, $headers, (array)json_decode(json_encode([ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ])) );
 
          #Recibe el contenido y dispone en json para la aplicacion
          $contents = json_decode($res->getBody()->getContents());
@@ -172,10 +172,67 @@ class FileMakerApiRestController extends Controller
          case 'edit':
             return $this->test_edit($request);
             break;
+         case 'show':
+            return $this->test_show($request);
+            break;
       }
    }
-   
-   public function test_edit(Request $request)
+   public function test_connection (Request $request)
+   {
+      try {
+
+         if ($request->wantsJson() || true) {
+            #Conectar con el cliente
+            $client = new Client([
+               'base_uri' => $this->uri->base_uri,
+               'verify' => $this->service_data->verify,
+            ]);
+
+            $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+
+            #(array)$this->json_auth_data
+            $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
+
+            switch ($response->getStatusCode()) {
+               case 200:
+
+                  $responseContents = json_decode($response->getBody()->getContents());
+                  #dd($responseContents->token);
+
+                  #Solicitar datos con el login
+                  $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/usuarios';
+
+                  $headers = [
+                     'headers' => [
+                        'Content-Type' => 'application/json',
+                        'FM-Data-token' => $responseContents->token,
+                     ]
+                  ];
+
+                  $res = $client->request('GET', $get_uri, $headers);
+
+                  $contents = json_decode($res->getBody()->getContents());
+                  return response()->json($contents->data);
+
+                  break;
+
+               case 401:
+               case 402:
+               case 403:
+               case 404:
+               case 405:
+               case 422:
+                  dd('Error: '.$response->getStatusCode());
+                  break;
+            }
+         }
+
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
+   }
+
+   public function test_edit (Request $request)
    {
       if ($request->wantsJson() || true) {
          #$response = $this->connect_api();
@@ -272,58 +329,50 @@ class FileMakerApiRestController extends Controller
 
    }
 
-   public function test_connection(Request $request)
-   {
-      try {
+   public function test_show (Request $request) {
+      #dd(response()->json(['rc'=>'1']));
+      #Conecta con el Api de FM y recibe el response de la conexion
+      $response = $this->connect_api($request->layout);
 
-         if ($request->wantsJson() || true) {
-            #Conectar con el cliente
-            $client = new Client([
-               'base_uri' => $this->uri->base_uri,
-               'verify' => $this->service_data->verify,
-            ]);
+      ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
 
-            $login_uri = str_replace(':solution',$this->service_data->solution, $this->uri->login_uri);
+      #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
+      $responseContents = json_decode($response->getBody()->getContents());
 
-            #(array)$this->json_auth_data
-            $response = $client->request('POST', $login_uri, (array)$this->json_auth_data);
+      #return response()->json($responseContents);
+      #Solicitar datos con el login (concatena el layout a consultar)
+      $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$request->layout;
 
-            switch ($response->getStatusCode()) {
-               case 200:
+      #Configura headers para hacer la peticion + token
 
-                  $responseContents = json_decode($response->getBody()->getContents());
-                  #dd($responseContents->token);
+      $query = json_decode(json_encode([
+         'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
+      ]));
 
-                  #Solicitar datos con el login
-                  $get_uri = 'fmi/rest/api/record/Tasks_FMAngular/usuarios';
+      $headers = [
+         'headers' => [
+            'Content-Type' => 'application/json',
+            'FM-Data-token' => $responseContents->token
+         ],
+      ];
 
-                  $headers = [
-                     'headers' => [
-                        'Content-Type' => 'application/json',
-                        'FM-Data-token' => $responseContents->token,
-                     ]
-                  ];
+      $options = json_decode(json_encode([
+         $query,
+         $headers,
+      ]));
 
-                  $res = $client->request('GET', $get_uri, $headers);
+      #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
+      #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
+      $res = $this->client->post($post_uri, $headers, (array)json_decode(json_encode([ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ])) );
 
-                  $contents = json_decode($res->getBody()->getContents());
-                  return response()->json($contents->data);
+      #Recibe el contenido y dispone en json para la aplicacion
+      $contents = json_decode($res->getBody()->getContents());
 
-                  break;
-                  
-               case 401:
-               case 402:
-               case 403:
-               case 404:
-               case 405:
-               case 422:
-                  dd('Error: '.$response->getStatusCode());
-                  break;
-            }
-         }
+      return dd($contents);
 
-      } catch (\Exception $ex) {
-         return $ex->getMessage();
-      }
+      return response()->json($contents->data);
+
    }
+
+
 }
