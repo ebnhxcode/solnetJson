@@ -80,12 +80,13 @@ class FileMakerApiRestController extends Controller
          $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/'.$request->layout;
          #Configura headers para hacer la peticion + token
          $query = json_decode(json_encode([
-            'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
+            'query' => ['Us_usuario' => 'Victor', 'Us_pass' => '123']
          ]));
          $headers = [
             'headers' => [
-               'Content-Type' => 'application/json',
-               'FM-Data-token' => $responseContents->token
+               'FM-Data-token' => $responseContents->token,
+               'Content-Type' => 'application/json'
+               
             ],
          ];
          $options = json_decode(json_encode([
@@ -94,7 +95,7 @@ class FileMakerApiRestController extends Controller
          ]));
          #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
          #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
-         $res = $this->client->post($post_uri, $headers, (array)json_decode(json_encode([ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ])) );
+         $res = $this->client->post($post_uri, $headers, (array)json_decode(json_encode([ 'query' => [json_decode(json_encode(['Us_usuario' => 'Victor', 'Us_pass' => '123']))] ])) );
          #Recibe el contenido y dispone en json para la aplicacion
          $contents = json_decode($res->getBody()->getContents());
          return dd($contents);
