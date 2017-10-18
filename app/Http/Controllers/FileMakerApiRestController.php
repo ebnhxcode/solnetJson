@@ -115,6 +115,7 @@ class FileMakerApiRestController extends Controller
             $headers,
          ]));
 
+         dd($options);
          #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
          #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
          $res = $this->client->post($post_uri, $headers, (array)json_decode(json_encode([ 'query' => [json_decode(json_encode(['Us_Usuario' => '=Victor', 'Us_pass' => '=123']))] ])) );
@@ -125,8 +126,6 @@ class FileMakerApiRestController extends Controller
          return dd($contents);
 
          return response()->json($contents->data);
-
-
 
       }
       
@@ -330,46 +329,53 @@ class FileMakerApiRestController extends Controller
    }
 
    public function test_show (Request $request) {
-      #dd(response()->json(['rc'=>'1']));
-      #Conecta con el Api de FM y recibe el response de la conexion
-      $response = $this->connect_api('usuarios');
-      ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
+      try {
+         #dd(response()->json(['rc'=>'1']));
+         #Conecta con el Api de FM y recibe el response de la conexion
+         $response = $this->connect_api('usuarios');
+         ##Al refactorizar validar por codigo 200 como condicion para controlar el error exception
 
-      #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
-      $responseContents = json_decode($response->getBody()->getContents());
+         #Decodifica el contenido de la respuesta del servidor, entre ellos el TOKEN
+         $responseContents = json_decode($response->getBody()->getContents());
 
-      #return response()->json($responseContents);
-      #Solicitar datos con el login (concatena el layout a consultar)
-      $post_uri = 'fmi/rest/api/find/Tasks_FMAngular/usuarios';
+         #return response()->json($responseContents);
+         #Solicitar datos con el login (concatena el layout a consultar)
+         $post_uri = 'fmi/rest/api/find/'.rawurlencode('Tasks_FMAngular').'/'.rawurlencode('usuarios');
 
-      #Configura headers para hacer la peticion + token
+         #Configura headers para hacer la peticion + token
 
-      $query = \GuzzleHttp\json_encode([
-         'query' => [['Us_Usuario' => '=Victor', 'Us_pass' => '=123']]
-      ]);
+         $query = \GuzzleHttp\json_encode([
+            'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
+         ]);
 
-      #dd($query);
+         #$query = \GuzzleHttp\json_decode($query);
+         #dd($query);
 
-      $headers = [
-         'headers' => [
-            'Content-Type' => 'application/json',
-            'FM-Data-token' => $responseContents->token
-         ]
-      ];
+         $headers = [
+            'headers' => [
+               'Content-Type' => 'application/json',
+               'FM-Data-token' => $responseContents->token,
+            ],
+            #'query' => (array)\GuzzleHttp\json_decode($query)
+         ];
 
-      #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
-      #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
+         #(array) [ 'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123'] ]
+         #Hace la peticion a la Api de FM y envia como parametros la url y los options (headers + body)
 
-      $res = $this->client->request('POST', $post_uri, $headers, $query );
+         #dd($post_uri);
 
-      dd($res);
+         $res = $this->client->request('POST', $post_uri, $headers, $query );
+         dd($res);
 
-      #Recibe el contenido y dispone en json para la aplicacion
-      $contents = json_decode($res->getBody()->getContents());
+         #Recibe el contenido y dispone en json para la aplicacion
+         $contents = json_decode($res->getBody()->getContents());
 
-      return dd($contents);
+         return dd($contents);
 
-      return response()->json($contents->data);
+         return response()->json($contents->data);
+      } catch (\Exception $ex) {
+         return $ex->getMessage();
+      }
 
    }
 
