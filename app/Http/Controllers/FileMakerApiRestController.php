@@ -47,7 +47,7 @@ class FileMakerApiRestController extends Controller
    /*
     *  Shortcut to connect with api, require $layout as parameter */
    public function login ($layout) { return $this->connect_api($layout); }
-
+   #public function logout (Request $request) {}
 
    public function getDataRequestByLayout ($layout) {
       #Conecta con el Api de FM y recibe el response de la conexion
@@ -68,7 +68,6 @@ class FileMakerApiRestController extends Controller
       #Recibe el contenido y dispone en json para la aplicacion
       $contents = json_decode($res->getBody()->getContents());
       return response()->json($contents->data);
-      
    }
    public function postDataRequestByLayout (Request $request) {
       $this->validate($request, [
@@ -117,18 +116,8 @@ class FileMakerApiRestController extends Controller
 
 
 
-   public function logout(Request $request)
-   {
-      try {
-         if ($request->wantsJson()) {
-         }else{
-            return abort(404);
-         }
-      } catch (\Exception $ex) {
-         return $ex->getMessage();
-      }
-   }
-   
+
+
    public function test($type, Request $request)
    {
       switch ($type) {

@@ -28,6 +28,17 @@ Route::get('/auth/logout', 'FileMakerApiRestController@logout');
 Route::get('rest/api/get/{layout}', 'FileMakerApiRestController@getDataRequestByLayout');
 Route::post('/rest/api/post', 'FileMakerApiRestController@postDataRequestByLayout');
 
+#Real routes :
+
+Route::get('rest/api/all/{layout}', 'FileMakerApiRestController@all'); #Head
+Route::get('rest/api/get/{layout}/{record_id}', 'FileMakerApiRestController@get'); #Get
+Route::post('rest/api/find/{layout}/{record_id}', 'FileMakerApiRestController@find'); #Get Shortcut for find
+Route::post('rest/api/post/{layout}/{record_id}', 'FileMakerApiRestController@post'); #Create, save
+Route::post('rest/api/save/{layout}/{record_id}', 'FileMakerApiRestController@save'); #Create, save, shortcut of post
+Route::post('rest/api/store/{layout}/{record_id}', 'FileMakerApiRestController@store'); #Create, save, shortcut of post
+Route::post('rest/api/put/{layout}/{record_id}', 'FileMakerApiRestController@put'); #Update
+Route::post('rest/api/update/{layout}/{record_id}', 'FileMakerApiRestController@update'); #Update, shortcut of put
+Route::post('rest/api/delete/{layout}/{record_id}', 'FileMakerApiRestController@delete'); #Delete
 
 
 
