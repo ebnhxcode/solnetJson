@@ -328,6 +328,48 @@ class FileMakerApiRestController extends Controller
 
    }
 
+
+
+   function callCURL ($url, $method, $payload='', $token) {
+      if (is_array ($payload)) $payload = json_encode ($payload);
+
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);         //follow redirects
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);         //return the transfer as a string
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE); //Don'T use cache
+
+      $query = \GuzzleHttp\json_encode([
+         'query' => [['Us_Usuario' => '=Victor', 'Us_pass' => '=123']]
+      ]);
+      
+      if (!$token) {
+         curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+      } else
+      {
+         curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+      }
+      if (!empty ($payload)) {
+         if ($method == 'GET') {
+            $url = $url . '?' . $payload;
+         } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query );
+         }
+      }
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      $result = curl_exec($ch);
+      $error = curl_error ($ch);
+      $info = curl_getinfo ($ch);
+      curl_close($ch);
+
+      return json_decode($result, true);
+   }
+
+
    public function test_show (Request $request) {
       try {
          #dd(response()->json(['rc'=>'1']));
@@ -340,10 +382,23 @@ class FileMakerApiRestController extends Controller
 
          #return response()->json($responseContents);
          #Solicitar datos con el login (concatena el layout a consultar)
-         $post_uri = 'fmi/rest/api/find/'.rawurlencode('Tasks_FMAngular').'/'.rawurlencode('usuarios');
+         $post_uri = 'https://201.238.235.30/fmi/rest/api/find/'.rawurlencode('Tasks_FMAngular').'/'.rawurlencode('usuarios');
 
          #Configura headers para hacer la peticion + token
 
+         $payload = [
+            'user' => 'nuevo',
+            'password' => '1234',
+            'layout' => 'usuarios',
+         ] ;
+
+
+
+         $this->callCURL($post_uri, 'POST', $payload, $responseContents->token);
+
+
+         dd('');
+         die();
          $query = \GuzzleHttp\json_encode([
             'query' => ['Us_Usuario' => '=Victor', 'Us_pass' => '=123']
          ]);
@@ -378,6 +433,8 @@ class FileMakerApiRestController extends Controller
       }
 
    }
+
+
 
 
 }
