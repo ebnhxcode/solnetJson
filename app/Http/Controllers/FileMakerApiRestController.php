@@ -49,13 +49,50 @@ class FileMakerApiRestController extends Controller
    public function login ($layout) { return $this->connect_api($layout); }
    #public function logout (Request $request) {}
 
-   public function all ($layout) {
-      $this->login($layout);
 
+   public function all (Request $request, $layout) {
+      $response = $this->login($layout);
+      $responseContents = json_decode($response->getBody()->getContents());
+      $token = $responseContents->token;
+      $url = $this->uri->base_uri;
+      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_all_uri);
+      $url = str_replace(':layout',rawurlencode($layout), $url);
+      $payload = (array)$this->auth_data;
 
+      #dd($url);
 
+      if (is_array ($payload)) $payload = json_encode ($payload);
 
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);         //follow redirects
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);         //return the transfer as a string
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE); //Don'T use cache
 
+      $method='GET';
+
+      curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+
+      if (!empty ($payload)) {
+         if ($method == 'GET') {
+            #$url = $url . '?' . $payload;
+            #dd($url);
+         } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+            #curl_setopt($ch, CURLOPT_POSTFIELDS, $query );
+         }
+      }
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      $result = curl_exec($ch);
+      $error = curl_error ($ch);
+      $info = curl_getinfo ($ch);
+      curl_close($ch);
+
+      #dd(json_decode($result));
+      return json_decode($result);
 
    }
 
@@ -144,6 +181,9 @@ class FileMakerApiRestController extends Controller
             break;
          case 'show':
             return $this->test_show($request);
+            break;
+         case 'all':
+            return $this->all($request, 'prueba');
             break;
       }
    }
