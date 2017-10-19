@@ -49,6 +49,113 @@ class FileMakerApiRestController extends Controller
    public function login ($layout) { return $this->connect_api($layout); }
    #public function logout (Request $request) {}
 
+   public function edit (Request $request, $layout, $recordId) {
+
+
+
+
+
+      $data = [
+         'data' => [
+            'Us_Nombre' => 'Vitoco',
+            'Us_Apellido_P' => 'Garrafa',
+            'Us_Apellido_M' => 'Sep.'
+         ],
+      ];
+
+      $response = $this->login($layout);
+      $responseContents = json_decode($response->getBody()->getContents());
+      $token = $responseContents->token;
+
+      $url = $this->uri->base_uri;
+      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->edit_uri);
+      $url = str_replace(':layout',rawurlencode($layout), $url);
+      $url = str_replace(':recordId',rawurlencode($recordId), $url);
+      $payload = (array)$this->auth_data;
+
+
+      if (is_array ($payload)) $payload = json_encode ($payload);
+      if (is_array ($data)) $data = json_encode ($data);
+
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);         //follow redirects
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);         //return the transfer as a string
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE); //Don'T use cache
+
+      $method='PUT';
+
+      curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+
+      if (!empty ($payload)) {
+         if ($method == 'GET') {
+            #$url = $url . '?' . $payload;
+            #dd($url);
+         } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+         }
+      }
+
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      $result = curl_exec($ch);
+      $error = curl_error ($ch);
+      $info = curl_getinfo ($ch);
+      curl_close($ch);
+
+      dd(json_decode($result));
+      #return json_decode($result);
+   }
+
+   public function get (Request $request, $layout, $recordId) {
+
+      $response = $this->login($layout);
+      $responseContents = json_decode($response->getBody()->getContents());
+      $token = $responseContents->token;
+
+      $url = $this->uri->base_uri;
+      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_uri);
+      $url = str_replace(':layout',rawurlencode($layout), $url);
+      $url = str_replace(':recordId',rawurlencode($recordId), $url);
+      $payload = (array)$this->auth_data;
+
+      if (is_array ($payload)) $payload = json_encode ($payload);
+
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);         //follow redirects
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);         //return the transfer as a string
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE); //Don'T use cache
+
+      $method='GET';
+
+      curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+
+      if (!empty ($payload)) {
+         if ($method == 'GET') {
+            #$url = $url . '?' . $payload;
+            #dd($url);
+         } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+            #curl_setopt($ch, CURLOPT_POSTFIELDS, $query );
+         }
+      }
+
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      $result = curl_exec($ch);
+      $error = curl_error ($ch);
+      $info = curl_getinfo ($ch);
+      curl_close($ch);
+
+      dd(json_decode($result));
+      #return json_decode($result);
+   }
 
    public function all (Request $request, $layout) {
       $response = $this->login($layout);
@@ -91,10 +198,15 @@ class FileMakerApiRestController extends Controller
       $info = curl_getinfo ($ch);
       curl_close($ch);
 
-      #dd(json_decode($result));
-      return json_decode($result);
+      dd(json_decode($result));
+      #return json_decode($result);
 
    }
+
+
+
+
+
 
 
    public function curl () {
@@ -183,7 +295,13 @@ class FileMakerApiRestController extends Controller
             return $this->test_show($request);
             break;
          case 'all':
-            return $this->all($request, 'prueba');
+            return $this->all($request, 'usuarios');
+            break;
+         case 'get':
+            return $this->get($request, 'usuarios', 2);
+            break;
+         case 'edit_curl':
+            return $this->edit($request, 'usuarios', 2);
             break;
       }
    }
