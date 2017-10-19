@@ -57,6 +57,7 @@ return [
       'delete_uri'   => 'fmi/rest/api/record/:solution/:layout/:recordId', #DELETE RECORD
       'edit_uri'     => 'fmi/rest/api/record/:solution/:layout/:recordId', #EDIT RECORD
       'get_uri'      => 'fmi/rest/api/record/:solution/:layout/:recordId', #GET A RECORD
+      'find_uri'     => 'fmi/rest/api/find/:solution/:layout', #FIND A RECORD
       'get_all_uri'  => 'fmi/rest/api/record/:solution/:layout', #GET RECORDS
    ],
 

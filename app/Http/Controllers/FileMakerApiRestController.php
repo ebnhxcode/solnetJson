@@ -153,6 +153,56 @@ class FileMakerApiRestController extends Controller
       #return json_decode($result);
    }
 
+   public function find (Request $request, $layout) {
+
+      $response = $this->login($layout);
+      $responseContents = json_decode($response->getBody()->getContents());
+      $token = $responseContents->token;
+
+      $url = $this->uri->base_uri;
+      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->find_uri);
+      $url = str_replace(':layout',rawurlencode($layout), $url);
+      $payload = (array)$this->auth_data;
+      $query = [
+         'query' => [['Us_Usuario' => '=Victor', 'Us_pass' => '=123']]
+      ];
+
+      if (is_array ($payload)) $payload = json_encode ($payload);
+      if (is_array ($query)) $query = json_encode ($query);
+
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);         //follow redirects
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);         //return the transfer as a string
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);         //don't verify SSL CERT
+      curl_setopt($ch, CURLOPT_VERBOSE, true);
+      curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE); //Don'T use cache
+
+      $method='POST';
+
+      curl_setopt ($ch, CURLOPT_HTTPHEADER, array ('FM-Data-token:'. $token , 'Content-Type:application/json'));
+
+      if (!empty ($payload)) {
+         if ($method == 'GET') {
+            #$url = $url . '?' . $payload;
+            #dd($url);
+         } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query );
+         }
+      }
+
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      $result = curl_exec($ch);
+      $error = curl_error ($ch);
+      $info = curl_getinfo ($ch);
+      curl_close($ch);
+
+      dd(json_decode($result));
+      #return json_decode($result);
+   }
+
    public function edit (Request $request, $layout, $recordId) {
 
       $data = [
@@ -305,10 +355,6 @@ class FileMakerApiRestController extends Controller
 
 
 
-
-
-
-
    public function curl () {
 
    }
@@ -402,6 +448,9 @@ class FileMakerApiRestController extends Controller
             break;
          case 'edit_curl':
             return $this->edit($request, 'usuarios', 2);
+            break;
+         case 'find':
+            return $this->find($request, 'usuarios');
             break;
          case 'create':
             return $this->create($request, 'usuarios');
