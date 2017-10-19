@@ -32,6 +32,7 @@ Route::post('/rest/api/post', 'FileMakerApiRestController@postDataRequestByLayou
 
 Route::get('rest/api/all/{layout}', 'FileMakerApiRestController@all'); #Head
 Route::get('rest/api/get/{layout}/{record_id}', 'FileMakerApiRestController@get'); #Get
+Route::post('rest/api/edit/{layout}/{record_id}', 'FileMakerApiRestController@edit'); #Edit record with recordId
 Route::post('rest/api/find/{layout}/{record_id}', 'FileMakerApiRestController@find'); #Get Shortcut for find
 Route::post('rest/api/post/{layout}/{record_id}', 'FileMakerApiRestController@post'); #Create, save
 Route::post('rest/api/save/{layout}/{record_id}', 'FileMakerApiRestController@save'); #Create, save, shortcut of post

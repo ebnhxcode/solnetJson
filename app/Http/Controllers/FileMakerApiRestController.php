@@ -51,10 +51,6 @@ class FileMakerApiRestController extends Controller
 
    public function edit (Request $request, $layout, $recordId) {
 
-
-
-
-
       $data = [
          'data' => [
             'Us_Nombre' => 'Vitoco',
