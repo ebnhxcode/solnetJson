@@ -2,8 +2,10 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+
 #use GuzzleHttp\Exception\RequestException;
 #use GuzzleHttp\Psr7\Request as GuzzleRequest;
+
 class FileMakerApiRestController extends Controller
 {
    private  $collection;#Coleccion de configuracion en config/collection.php
@@ -53,6 +55,7 @@ class FileMakerApiRestController extends Controller
    /*
     *  Shortcut to connect with api, require $layout as parameter */
    public function login ($layout) { return $this->connect_api($layout); }
+
    public function logout (Request $request) { return $this->disconnect_api(); }
 
 
@@ -67,6 +70,8 @@ class FileMakerApiRestController extends Controller
    }
 
    public function create (Request $request, $layout) {
+      $parameters = $request->all();
+
       $url = $this->uri->base_uri;
       $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->create_uri);
       $url = str_replace(':layout',rawurlencode($layout), $url);
@@ -82,54 +87,65 @@ class FileMakerApiRestController extends Controller
       dd(json_decode($result));
    }
 
-   public function find (Request $request, $layout) {
+   public function find (Request $request) {
+      $layout = $request->layout;
       $url = $this->uri->base_uri;
       $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->find_uri);
       $url = str_replace(':layout',rawurlencode($layout), $url);
       $payload = (array)$this->auth_data;
+      return response()->json($request->all());
       $query = [
          'query' => [['Us_Usuario' => '=Victor', 'Us_pass' => '=123']]
       ];
       $result = $this->curl($layout,'POST',$payload,$url,$query);
+      return
       dd(json_decode($result));
    }
 
    public function edit (Request $request, $layout, $recordId) {
+      if ($request->wantsJson() || true) {
+         $data = [
+            'data' => [
+               'Us_Nombre' => 'Vitoco',
+               'Us_Apellido_P' => 'Garrafalol',
+               'Us_Apellido_M' => 'Sep.'
+            ],
+         ];
 
-      $data = [
-         'data' => [
-            'Us_Nombre' => 'Vitoco',
-            'Us_Apellido_P' => 'Garrafalol',
-            'Us_Apellido_M' => 'Sep.'
-         ],
-      ];
-
-      $url = $this->uri->base_uri;
-      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->edit_uri);
-      $url = str_replace(':layout',rawurlencode($layout), $url);
-      $url = str_replace(':recordId',rawurlencode($recordId), $url);
-      $payload = (array)$this->auth_data;
-      $result = $this->curl($layout,'PUT',$payload,$url,$data);
-      dd(json_decode($result));
+         $url = $this->uri->base_uri;
+         $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->edit_uri);
+         $url = str_replace(':layout',rawurlencode($layout), $url);
+         $url = str_replace(':recordId',rawurlencode($recordId), $url);
+         $payload = (array)$this->auth_data;
+         $result = $this->curl($layout,'PUT',$payload,$url,$data);
+         return json_decode($result);
+         #dd(json_decode($result));
+      }
    }
 
    public function get (Request $request, $layout, $recordId) {
-      $url = $this->uri->base_uri;
-      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_uri);
-      $url = str_replace(':layout',rawurlencode($layout), $url);
-      $url = str_replace(':recordId',rawurlencode($recordId), $url);
-      $payload = (array)$this->auth_data;
-      $result = $this->curl($layout,'GET',$payload,$url);
-      dd(json_decode($result));
+      if ($request->wantsJson() || true) {
+         $url = $this->uri->base_uri;
+         $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_uri);
+         $url = str_replace(':layout',rawurlencode($layout), $url);
+         $url = str_replace(':recordId',rawurlencode($recordId), $url);
+         $payload = (array)$this->auth_data;
+         $result = $this->curl($layout,'GET',$payload,$url);
+         return response()->json(json_decode($result));
+         #dd(json_decode($result));
+      }
    }
 
    public function all (Request $request, $layout) {
-      $url = $this->uri->base_uri;
-      $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_all_uri);
-      $url = str_replace(':layout',rawurlencode($layout), $url);
-      $payload = (array)$this->auth_data;
-      $result = $this->curl($layout,'GET',$payload,$url);
-      dd(json_decode($result));
+      if ($request->wantsJson() || true) {
+         $url = $this->uri->base_uri;
+         $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->get_all_uri);
+         $url = str_replace(':layout',rawurlencode($layout), $url);
+         $payload = (array)$this->auth_data;
+         $result = $this->curl($layout,'GET',$payload,$url);
+         return response()->json(json_decode($result));
+         #dd(json_decode($result));
+      }
    }
 
    public function curl ($layout, $method, $payload, $url, $query='') {
