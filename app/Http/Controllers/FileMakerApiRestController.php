@@ -88,13 +88,12 @@ class FileMakerApiRestController extends Controller
    }
 
    public function find (Request $request) {
-      if ($request->wantsJson() || true) {
+      #if ($request->wantsJson() || true) {
          $layout = $request->layout;
          $url = $this->uri->base_uri;
          $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->find_uri);
          $url = str_replace(':layout',rawurlencode($layout), $url);
          $payload = (array)$this->auth_data;
-
 
          $query = [
             'query' => [['Us_Usuario' => '=Victor', 'Us_pass' => '=123']]
@@ -102,7 +101,7 @@ class FileMakerApiRestController extends Controller
 
          $result = $this->curl($layout,'POST',$payload,$url,$query);
          return response()->json(json_decode($result));
-      }
+      #}
       //dd(json_decode($result));
    }
 
