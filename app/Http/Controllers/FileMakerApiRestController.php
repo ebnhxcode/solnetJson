@@ -89,7 +89,7 @@ class FileMakerApiRestController extends Controller
 
    public function find (Request $request) {
       if ($request->wantsJson() || true) {
-         $layout = $request->json['layout'];
+         $layout = $request['layout'];
          $url = $this->uri->base_uri;
          $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->find_uri);
          $url = str_replace(':layout',rawurlencode($layout), $url);
