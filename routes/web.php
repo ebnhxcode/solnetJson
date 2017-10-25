@@ -16,11 +16,6 @@
 #Route to test connection with FM Api rest
 #Route::get('test', 'TestController@test');
 
-
-Route::post('rest/api/post/{layout}', function () {
-   dd(1);
-});
-
 #For the moment all is public : mode development.
 Route::get('/test/{type}', 'FileMakerApiRestController@test');
 Route::get('/auth/login', 'FileMakerApiRestController@login');

@@ -135,7 +135,7 @@ class FileMakerApiRestController extends Controller
          $url = str_replace(':recordId',rawurlencode($recordId), $url);
          $payload = (array)$this->auth_data;
          $result = $this->curl($layout,'GET',$payload,$url);
-         return response()->json(json_decode($result));
+         return response()->json(['body'=>json_decode($result)]);
          #dd(json_decode($result));
       }
    }
