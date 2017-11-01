@@ -94,6 +94,7 @@ class FileMakerApiRestController extends Controller
          $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->find_uri);
          $url = str_replace(':layout',rawurlencode($layout), $url);
          $payload = (array)$this->auth_data;
+
          /*
           * Ejemplo del formato del query de busqueda que viene como peticion desde la app
          $query = [
@@ -147,7 +148,8 @@ class FileMakerApiRestController extends Controller
          $url = str_replace(':layout',rawurlencode($layout), $url);
          $payload = (array)$this->auth_data;
          $result = $this->curl($layout,'GET',$payload,$url);
-         return response()->json(json_decode($result));
+         #return $result;
+         return response()->json(['json_result' => json_decode($result)]);
          #dd(json_decode($result));
       }
    }
