@@ -69,22 +69,19 @@ class FileMakerApiRestController extends Controller
       dd(json_decode($result));
    }
 
-   public function create (Request $request, $layout) {
-      $parameters = $request->all();
-
+   public function save (Request $request) {
+      $parameters = (array)$request->all();
+      #return (array)$parameters['data'];
+      #return $parameters['layout']['name'];
       $url = $this->uri->base_uri;
       $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->create_uri);
-      $url = str_replace(':layout',rawurlencode($layout), $url);
+      $url = str_replace(':layout',rawurlencode($parameters['layout']['name']), $url);
       $payload = (array)$this->auth_data;
       $data = [
-         'data' => [
-            'Us_Nombre' => 'elliot',
-            'Us_Apellido_P' => 'alderson',
-            'Us_Apellido_M' => '.'
-         ],
+         'data' => (array)$parameters['data'],
       ];
-      $result = $this->curl($layout,'POST',$payload,$url,$data);
-      dd(json_decode($result));
+      $result = $this->curl($parameters['layout']['name'],'POST',$payload,$url,$data);
+      return response()->json($result);
    }
 
    public function find (Request $request) {
