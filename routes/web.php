@@ -27,14 +27,14 @@ Route::post('/rest/api/post', 'FileMakerApiRestController@postDataRequestByLayou
 
 Route::get('rest/api/all/{layout}', 'FileMakerApiRestController@all'); #Head
 Route::get('rest/api/get/{layout}/{record_id}', 'FileMakerApiRestController@get'); #Get
-Route::post('rest/api/edit/{layout}/{record_id}', 'FileMakerApiRestController@edit'); #Edit record with recordId
+Route::post('rest/api/edit', 'FileMakerApiRestController@edit'); #Edit record with recordId
 Route::post('rest/api/find', 'FileMakerApiRestController@find'); #Get Shortcut for find
 Route::post('rest/api/post/{layout}/{record_id}', 'FileMakerApiRestController@post'); #Create, save
 
 Route::post('rest/api/save', 'FileMakerApiRestController@save'); #Create, save, shortcut of post
 
 Route::post('rest/api/store/{layout}/{record_id}', 'FileMakerApiRestController@store'); #Create, save, shortcut of post
-Route::post('rest/api/put/{layout}/{record_id}', 'FileMakerApiRestController@put'); #Update
+Route::post('rest/api/put', 'FileMakerApiRestController@put'); #Update
 Route::post('rest/api/update/{layout}/{record_id}', 'FileMakerApiRestController@update'); #Update, shortcut of put
 Route::post('rest/api/delete/{layout}/{record_id}', 'FileMakerApiRestController@delete'); #Delete
 

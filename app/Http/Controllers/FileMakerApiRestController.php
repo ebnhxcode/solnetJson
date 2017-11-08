@@ -104,24 +104,22 @@ class FileMakerApiRestController extends Controller
       }
    }
 
-   public function edit (Request $request, $layout, $recordId) {
+   public function edit (Request $request) {
       if ($request->wantsJson() || true) {
+         $parameters = (array)$request->all();
          $data = [
-            'data' => [
-               'Us_Nombre' => 'Vitoco',
-               'Us_Apellido_P' => 'Garrafalol',
-               'Us_Apellido_M' => 'Sep.'
-            ],
+            'data' => (array)$parameters['data'],
          ];
 
          $url = $this->uri->base_uri;
          $url .= str_replace(':solution',rawurlencode($this->service_data->solution), $this->uri->edit_uri);
-         $url = str_replace(':layout',rawurlencode($layout), $url);
-         $url = str_replace(':recordId',rawurlencode($recordId), $url);
+         $url = str_replace(':layout',rawurlencode($parameters['layout']['name']), $url);
+         $url = str_replace(':recordId',rawurlencode($parameters['recordId']), $url);
          $payload = (array)$this->auth_data;
-         $result = $this->curl($layout,'PUT',$payload,$url,$data);
-         return json_decode($result);
-         #dd(json_decode($result));
+
+         $result = $this->curl($parameters['layout']['name'],'PUT',$payload,$url,$data);
+         return $result;
+
       }
    }
 
